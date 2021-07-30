@@ -61,7 +61,7 @@ Consiste em gerenciar os dados dos empregados e os pagamentos à estes empregado
 1. Lançar taxa de serviço
    * Anotará taxa de serviço e associará ao funcionário correto
 
-1. Alterar detalhes de um empreagado
+1. Alterar detalhes de um empregado
    * Os seguinte atributos podem ser alterados
      * Nome, Endereço, Tipo, Método de pagamento, Se pertence ao sindicato ou não, indentificação no sindicato, taxa sindical
 
