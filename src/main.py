@@ -17,6 +17,9 @@ class Employee:
     def __str__(self):
         return f'{self.id}, {self.name}, {self.address}, {self.type}, {self.parameter}'
 
+    def owing(self, owing: int):
+        self.owing += owing
+
 def hash_date(date: datetime.date):
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     days = 0
@@ -34,18 +37,19 @@ class PayrollSystem:
     SELL_RESULT = 1
     SERVICE_TAX = 2
 
+    current_date = datetime.date.today()
+
     def __init__(self):
         self.count = 0
         self.employees = []
-        self.current_date = datetime.date.today()
         self.calendar = {}
         for i in range(366):
             self.calendar[i] = []
 
         self.current_day = self.calendar[hash_date(self.current_date)]
 
-    def update_day(self):
-        self.current_date += datetime.timedelta(days=1)
+    def update_day(self, add_days = 1):
+        self.current_date += datetime.timedelta(days=add_days)
         self.current_day = self.calendar[hash_date(self.current_date)]
 
     def print_vals(self):
@@ -53,24 +57,29 @@ class PayrollSystem:
         for employee in self.employees:
             print(employee.__str__())
 
-    def add_employee(self, name, address, type, attributes):
+    def add_employee(self, name: str, address: str, type: str, attributes: int):
         self.employees.append(Employee(name, address, type, attributes, self.count))
         self.count += 1
 
-    def del_employee(self, id):
+    def del_employee(self, id: int):
         index = next(i for i, x in enumerate(self.employees) if x.id == id)
         del self.employees[index]
 
-    def search_employee(self, id=int):
+    def search_employee(self, id: int):
         return next(x for x in self.employees if x.id == id)
 
-    def launch_timecard(self, id, hours):
+    def launch_timecard(self, id: int, hours: int):
         employee = self.search_employee(id)
         self.current_day.append((self.TIMECARD, employee.id, hours))
 
-    def launch_sell_result(self, id, price):
+    def launch_sell_result(self, id: int, price: int, date: datetime.date = current_date, date_offset: int = 0):
         employee = self.search_employee(id)
-        self.current_day.append((self.SELL_RESULT, employee.id, price))
+        self.calendar[hash_date(date + datetime.timedelta(days=date_offset))].append((self.SELL_RESULT, employee.id, price))
+
+    # charge must be a whole value, not a percentage of wage
+    def launch_service_charge(self, id: int, charge: int):
+        employee = self.search_employee(id)
+        employee.owing(charge)
 
     def print_calendar(self):
         for key in self.calendar:
@@ -105,7 +114,8 @@ if __name__ == '__main__':
     payroll.print_vals()
 
     payroll.launch_timecard(0, 9)
-    payroll.launch_sell_result(0, 1200)
+    payroll.launch_sell_result(0, 1200, date_offset=1)
     payroll.update_day()
     payroll.launch_timecard(0, 8)
+    payroll.launch_service_charge(0, 100)
     payroll.print_calendar()
