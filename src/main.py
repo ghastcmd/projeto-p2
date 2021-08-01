@@ -5,26 +5,27 @@ def unimplemented():
     return
 
 class Employee:
-    HOURLY = 0
-    SALARIED = 1
-    COMMISSIONED = 2
-
-    def __init__(self, name, address, type, attributes, id = 0):
+    def __init__(self, name: str, address: str, type: str, attributes: int, id = 0):
         self.name = name
         self.address = address
         self.type = type
-        
-        default_methods = {self.HOURLY: 'weekly', self.SALARIED: 'monthly', self.COMMISSIONED: 'bi-weekly'}
+
+        default_methods = {'hourly': 'weekly', 'salaried': 'monthly', 'commissioned': 'bi-weekly'}
         self.parameter = attributes
         self.payment_method = default_methods[type]
 
+        self.syndicate = False
+        self.syndicate_id = 0
+        self.syndicate_charge = 0
         self.id = id
+
+        self.owing_qnt = 0
 
     def __str__(self):
         return f'{self.id}, {self.name}, {self.address}, {self.type}, {self.parameter}'
 
     def owing(self, owing: int):
-        self.owing += owing
+        self.owing_qnt += owing
 
 def hash_date(date: datetime.date):
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -92,10 +93,23 @@ class PayrollSystem:
             if self.calendar[key] != []:
                 print(str(key) + ':', self.calendar[key])
 
-    def change_employee_data(self, id: int, ):
+    def change_employee_data(self, id: int, name: str = 0, address: str = 0, type: str = 0, payment_method: str = 0, syndicate: bool = 0, syndicate_id: int = 0, syndicate_charge: int = 0):
         employee = self.search_employee(id)
+        if name:
+            employee.name = name
+        if address:
+            employee.address = address
+        if type:
+            employee.type = type
+        if payment_method:
+            employee.payment_method = payment_method
         
+        employee.syndicate = syndicate
 
+        if syndicate_id:
+            employee.syndicate_id = syndicate_id
+        if syndicate_charge:
+            employee.syndicate_charge = syndicate_charge
 
 
 # calendar.isleap is to see if a year is leap, basically it runs a year % 4
@@ -105,7 +119,6 @@ class PayrollSystem:
 #     [0,1,2,3,4,5,6], [7, ...] ...
 
 calendar.setfirstweekday(calendar.SUNDAY)
-
 
 def get_date_format(date):
     return date.year, date.month, date.day
@@ -119,13 +132,16 @@ if __name__ == '__main__':
 
     payroll.print_vals()
 
-    payroll.del_employee(1)
+    payroll.del_employee(2)
 
     payroll.print_vals()
 
-    payroll.launch_timecard(0, 9)
-    payroll.launch_sell_result(0, 1200, date_offset=1)
+    payroll.launch_timecard(1, 9)
+    payroll.launch_sell_result(1, 1200, date_offset=1)
     payroll.update_day()
-    payroll.launch_timecard(0, 8)
-    payroll.launch_service_charge(0, 100)
+    payroll.launch_timecard(1, 8)
+    payroll.launch_service_charge(1, 100)
     payroll.print_calendar()
+
+    payroll.change_employee_data(3, name='simple_name', syndicate=True, type='salaried')
+    payroll.print_vals()
