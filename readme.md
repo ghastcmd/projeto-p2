@@ -65,22 +65,22 @@ Consiste em gerenciar os dados dos empregados e os pagamentos à estes empregado
    * Os seguinte atributos podem ser alterados
      * Nome, Endereço, Tipo, Método de pagamento, Se pertence ao sindicato ou não, indentificação no sindicato, taxa sindical
 
-1. Rodar folha de pagamento para hoje
+2. Rodar folha de pagamento para hoje
    * O sistema deve achar todos os empregados que devem ser pagos no dia
      * Deve calcular o valor do salário
      * Providenciar pagamento de acordo com método de pagamento escolhido pelo empregado
 
-1. Undo/Redo
+3. Undo/Redo
    * Qualquer funcionalidade feita entre as relações 1 - 7
      * Undo - Desfeitas
      * Redo - Refeita
 
-1. Agenda de pagamento
+4. Agenda de pagamento
    * Empregados podem selecionar a agenda de pagamento que desejarem
    * Por default as agendas "semanalmente", "mensalmente" e "bi-semanalmente" são usadas
    * Um empregados pode pedir para ser pago com qualquer uma dessas agendas
 
-1. Criação de novas agendas de pagamento
+5. Criação de novas agendas de pagamento
    * Criar uma agenda de pagamento para ser disponibilizada para os empregados
    * Uma agenda é especificada através de uma string
      * Exemplo de novas agendas de pagamento
