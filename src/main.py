@@ -5,12 +5,18 @@ def unimplemented():
     return
 
 class Employee:
+    HOURLY = 0
+    SALARIED = 1
+    COMMISSIONED = 2
+
     def __init__(self, name, address, type, attributes, id = 0):
         self.name = name
         self.address = address
         self.type = type
-
+        
+        default_methods = {self.HOURLY: 'weekly', self.SALARIED: 'monthly', self.COMMISSIONED: 'bi-weekly'}
         self.parameter = attributes
+        self.payment_method = default_methods[type]
 
         self.id = id
 
@@ -40,7 +46,7 @@ class PayrollSystem:
     current_date = datetime.date.today()
 
     def __init__(self):
-        self.count = 0
+        self.count = 1
         self.employees = []
         self.calendar = {}
         for i in range(366):
@@ -85,6 +91,10 @@ class PayrollSystem:
         for key in self.calendar:
             if self.calendar[key] != []:
                 print(str(key) + ':', self.calendar[key])
+
+    def change_employee_data(self, id: int, ):
+        employee = self.search_employee(id)
+        
 
 
 
