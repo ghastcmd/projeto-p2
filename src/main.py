@@ -1,9 +1,6 @@
 import calendar
 import datetime
 
-def unimplemented():
-    return
-
 class Employee:
     def __init__(self, name: str, address: str, id: int = 0):
         self.name = name
@@ -40,7 +37,6 @@ class Commissioned(Employee):
     def __init__(self, name, address, commission, id = 0):
         super().__init__(name, address, id)
 
-
         self.payment_method = 'bi-weekly'
 
     def generate_payment(self, previous_date):
@@ -49,7 +45,6 @@ class Commissioned(Employee):
 class Hourly(Employee):
     def __init__(self, name, address, hour_wage, id = 0):
         super().__init__(name, address, id)
-
 
         self.payment_method = 'weekly'
 
@@ -96,10 +91,6 @@ class PayrollSystem:
             print(employee.__str__())
 
     def add_employee(self, name: str, address: str, type: str, attr: int):
-        assalaried = 0
-        commissioned = 1
-        hourly = 2
-
         types = ['salaried', 'commissioned', 'hourly']
         assert type in types
 
@@ -112,12 +103,12 @@ class PayrollSystem:
         
         self.count += 1
 
+    def search_employee(self, id: int):
+        return next(x for x in self.employees if x.id == id)
+
     def del_employee(self, id: int):
         index = next(i for i, x in enumerate(self.employees) if x.id == id)
         del self.employees[index]
-
-    def search_employee(self, id: int):
-        return next(x for x in self.employees if x.id == id)
 
     def launch_timecard(self, id: int, hours: int):
         employee = self.search_employee(id)
