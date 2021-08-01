@@ -5,14 +5,9 @@ def unimplemented():
     return
 
 class Employee:
-    def __init__(self, name: str, address: str, type: str, attributes: int, id = 0):
+    def __init__(self, name: str, address: str, id: int = 0):
         self.name = name
         self.address = address
-        self.type = type
-
-        default_methods = {'hourly': 'weekly', 'salaried': 'monthly', 'commissioned': 'bi-weekly'}
-        self.parameter = attributes
-        self.payment_method = default_methods[type]
 
         self.syndicate = False
         self.syndicate_id = 0
@@ -22,10 +17,46 @@ class Employee:
         self.owing_qnt = 0
 
     def __str__(self):
-        return f'{self.id}, {self.name}, {self.address}, {self.type}, {self.parameter}'
+        return f'{self.id}, {self.name}, {self.address}'
 
     def owing(self, owing: int):
         self.owing_qnt += owing
+
+    def generate_payment(self, previous_date):
+        raise NotImplementedError()
+
+# * Specialized classes * #
+
+class Salaried(Employee):
+    def __init__(self, name, address, monthly_wage, id = 0):
+        super().__init__(name, address, id)
+
+        self.payment_method = 'monthly'
+
+    def generate_payment(self, previous_date):
+        print('Generated assalaried payment of:', self.parameter)
+
+class Commissioned(Employee):
+    def __init__(self, name, address, commission, id = 0):
+        super().__init__(name, address, id)
+
+
+        self.payment_method = 'bi-weekly'
+
+    def generate_payment(self, previous_date):
+        print('Generated commissioned of:', self.paramaters)
+
+class Hourly(Employee):
+    def __init__(self, name, address, hour_wage, id = 0):
+        super().__init__(name, address, id)
+
+
+        self.payment_method = 'weekly'
+
+    def generate_payment(self, previous_date):
+        print('Generated hourly of:', self.parameters)
+
+# * Starting payroll system * #
 
 def hash_date(date: datetime.date):
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -51,7 +82,7 @@ class PayrollSystem:
         self.employees = []
         self.calendar = {}
         for i in range(366):
-            self.calendar[i] = []
+            self.calendar[i] = {'update': [], 'schedule': []}
 
         self.current_day = self.calendar[hash_date(self.current_date)]
 
@@ -64,8 +95,21 @@ class PayrollSystem:
         for employee in self.employees:
             print(employee.__str__())
 
-    def add_employee(self, name: str, address: str, type: str, attributes: int):
-        self.employees.append(Employee(name, address, type, attributes, self.count))
+    def add_employee(self, name: str, address: str, type: str, attr: int):
+        assalaried = 0
+        commissioned = 1
+        hourly = 2
+
+        types = ['salaried', 'commissioned', 'hourly']
+        assert type in types
+
+        if type == 'salaried':
+            self.employees.append(Salaried(name, address, attr, self.count))
+        elif type == 'commissioned':
+            self.employees.append(Commissioned(name, address, attr, self.count))
+        elif type == 'hourly':
+            self.employees.append(Hourly(name, address, attr, self.count))
+        
         self.count += 1
 
     def del_employee(self, id: int):
@@ -77,11 +121,11 @@ class PayrollSystem:
 
     def launch_timecard(self, id: int, hours: int):
         employee = self.search_employee(id)
-        self.current_day.append((self.TIMECARD, employee.id, hours))
+        self.current_day['schedule'].append((self.TIMECARD, employee.id, hours))
 
     def launch_sell_result(self, id: int, price: int, date: datetime.date = current_date, date_offset: int = 0):
         employee = self.search_employee(id)
-        self.calendar[hash_date(date + datetime.timedelta(days=date_offset))].append((self.SELL_RESULT, employee.id, price))
+        self.calendar[hash_date(date + datetime.timedelta(days=date_offset))]['schedule'].append((self.SELL_RESULT, employee.id, price))
 
     # charge must be a whole value, not a percentage of wage
     def launch_service_charge(self, id: int, charge: int):
@@ -90,7 +134,7 @@ class PayrollSystem:
 
     def print_calendar(self):
         for key in self.calendar:
-            if self.calendar[key] != []:
+            if self.calendar[key] != {'schedule':[], 'update':[]}:
                 print(str(key) + ':', self.calendar[key])
 
     def change_employee_data(self, id: int, name: str = 0, address: str = 0, type: str = 0, payment_method: str = 0, syndicate: bool = 0, syndicate_id: int = 0, syndicate_charge: int = 0):
@@ -126,8 +170,8 @@ def get_date_format(date):
 if __name__ == '__main__':
     payroll = PayrollSystem()
 
-    payroll.add_employee('alelo', 'maritona st. 19', 'hourly', 12)
     payroll.add_employee('simple', 'via st. 11', 'salaried', 1230)
+    payroll.add_employee('alelo', 'maritona st. 19', 'hourly', 12)
     payroll.add_employee('another', 'via st. 12', 'salaried', 1240)
 
     payroll.print_vals()
