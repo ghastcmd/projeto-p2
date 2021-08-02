@@ -38,6 +38,8 @@ class PayrollSystem:
         elif type == 'hourly':
             self.employees.append(Hourly(name, address, attr, self.count))
         
+        self.employees[-1].generate_schedule_paymethod(self.current_date, self.calendar)
+
         self.count += 1
 
     def search_employee(self, id: int):
