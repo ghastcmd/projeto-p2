@@ -2,18 +2,6 @@ from employee import *
 
 # * Starting payroll system * #
 
-def hash_date(date: datetime.date):
-    months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    days = 0
-    for i in range(date.month):
-        days += months[i]
-    days += date.day
-    is_leap = calendar.isleap(date.year)
-    if days > 31 + 28:
-        days += int(is_leap)
-    
-    return days
-
 class PayrollSystem:
     TIMECARD = 0
     SELL_RESULT = 1

@@ -29,5 +29,8 @@ if __name__ == '__main__':
     payroll.launch_service_charge(1, 100)
     payroll.print_calendar()
 
-    payroll.change_employee_data(3, name='simple_name', syndicate=True, type='salaried')
+    payroll.change_employee_data(3, name='simple_name', syndicate=True, type='salaried', payment_method='weekly')
     payroll.print_vals()
+
+    payroll.employees[0].generate_payment(payroll.current_date, payroll.calendar)
+    # payroll.employees[1].generate_payment(payroll.current_date, payroll.calendar)
