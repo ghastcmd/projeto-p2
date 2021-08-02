@@ -117,14 +117,15 @@ def schedule_paymethod(date: datetime.date, entry: str):
         'friday': 4, 'saturday': 5, 'sunday': 6
     }
 
+    special_dict = {
+        'monthly': 'monthly $', 'weekly': 'weekly 1 friday',
+        'bi-weekly': 'weekly 2 friday', 'mensalmente': 'monthly $',
+        'semanalmente': 'weekly 1 friday', 'bi-semanalmente': 'weekly 2 friday'
+    }
+
     parsed_entry = entry.split(' ')
     if len(parsed_entry) == 1:
-        if entry == 'monthly':
-            entry = 'monthly $'
-        elif entry == 'weekly':
-            entry = 'weekly 1 friday'
-        elif entry == 'bi-weekly':
-            entry = 'weekly 2 friday'
+        entry = special_dict[entry]
         parsed_entry = entry.split(' ')
 
     func_selection = func_dict[parsed_entry[0]]
