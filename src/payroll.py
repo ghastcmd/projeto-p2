@@ -49,7 +49,7 @@ class PayrollSystem:
 
     def launch_timecard(self, id: int, hours: int):
         employee = self.search_employee(id)
-        self.current_day['schedule'].append((self.TIMECARD, employee.id, hours))
+        employee.add_hourwage(hours)
 
     def launch_sell_result(self, id: int, price: int, date: datetime.date = current_date, date_offset: int = 0):
         employee = self.search_employee(id)

@@ -191,7 +191,7 @@ class Hourly(Employee):
         self.added_wage = 0
 
     def add_hourwage(self, hours):
-        value = self.hour_wage * (hours % 8)
+        value = self.hour_wage * (hours - (hours - 8) * (hours > 8))
 
         if hours - 8 > 0:
             value += (hours - 8) * self.hour_wage * 1.5

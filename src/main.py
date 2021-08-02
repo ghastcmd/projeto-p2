@@ -16,6 +16,7 @@ if __name__ == '__main__':
     payroll.add_employee('alelo', 'maritona st. 19', 'hourly', 12)
     payroll.add_employee('another', 'via st. 12', 'salaried', 1240)
     payroll.add_employee('Geredos', 'maritnoa elwoe st. 1', 'commissioned', 13)
+    payroll.add_employee('alelo', 'maritona st. 19', 'hourly', 12)
 
     payroll.print_vals()
 
@@ -23,10 +24,10 @@ if __name__ == '__main__':
 
     payroll.print_vals()
 
-    payroll.launch_timecard(1, 9)
+    payroll.launch_timecard(5, 9)
     payroll.launch_sell_result(1, 1200, date_offset=1)
     payroll.update_day()
-    payroll.launch_timecard(1, 8)
+    payroll.launch_timecard(5, 8)
     payroll.launch_service_charge(1, 100)
     payroll.print_calendar()
 
@@ -41,3 +42,6 @@ if __name__ == '__main__':
     payroll.launch_sell_result(4, 1200, date_offset=3)
 
     payroll.print_calendar()
+
+    assert payroll.employees[3].added_wage == 210
+    
