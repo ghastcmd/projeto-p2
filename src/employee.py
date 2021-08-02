@@ -124,6 +124,7 @@ class Employee:
         self.name = name
         self.address = address
 
+        self.payment_method = ''
         self.syndicate = False
         self.syndicate_id = 0
         self.syndicate_charge = 0
@@ -136,6 +137,10 @@ class Employee:
 
     def owing(self, owing: int):
         self.owing_qnt += owing
+
+    def generate_schedule_paymethod(self, date, c_calendar):
+        payment_date = schedule_paymethod(date, self.payment_method)
+        add_schedule_date(self.id, payment_date, c_calendar)
 
     def generate_payment(self, current_date, current_calendar):
         raise NotImplementedError()
@@ -152,10 +157,9 @@ class Salaried(Employee):
         self.monthly_wage = monthly_wage
 
     def generate_payment(self, current_date, current_calendar):
-        payment_date = schedule_paymethod(current_date, self.payment_method)
-        add_schedule_date(self.id, payment_date, current_calendar)
-
         print('Generated salary payment of:', self.name, '_ R$', self.monthly_wage)
+
+        super().generate_schedule_paymethod(current_date, current_calendar)
 
 class Commissioned(Employee):
     def __init__(self, name, address, commission, id = 0):
@@ -163,8 +167,20 @@ class Commissioned(Employee):
 
         self.payment_method = 'bi-weekly'
 
+        self.base_salary = 900
+        self.added_price = 0
+        self.commission_rate = commission
+
+    def add_commission(self, price):
+        value = price * (self.commission_rate / 100)
+        self.added_price += value
+
     def generate_payment(self, current_date, current_calendar):
-        print('Generated commissioned of:', self.paramaters)
+        value = self.added_price + self.base_salary
+        self.added_price = 0
+        print('Generated payment of:', self.name, '_ R$', value)
+
+        super().generate_schedule_paymethod(current_date, current_calendar)
 
 class Hourly(Employee):
     def __init__(self, name, address, hour_wage, id = 0):
@@ -172,6 +188,19 @@ class Hourly(Employee):
 
         self.payment_method = 'weekly'
         self.hour_wage = hour_wage
+        self.added_wage = 0
+
+    def add_hourwage(self, hours):
+        value = self.hour_wage * (hours % 8)
+
+        if hours - 8 > 0:
+            value += (hours - 8) * self.hour_wage * 1.5
+        
+        self.added_wage += value
 
     def generate_payment(self, current_date, current_calendar):
-        print('Generated hourly of:', self.hour_wage)
+        print('Generated payment of:', self.name, '_ R$', self.added_wage)
+
+        self.added_wage = 0
+
+        super().generate_schedule_paymethod(current_date, current_calendar)

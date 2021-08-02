@@ -61,6 +61,7 @@ class PayrollSystem:
         employee.owing(charge)
 
     def print_calendar(self):
+        print('---------------- calendar ------------------')
         for key in self.calendar:
             if self.calendar[key] != {'schedule':[], 'update':[]}:
                 print(str(key) + ':', self.calendar[key])
