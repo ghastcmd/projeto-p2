@@ -33,4 +33,4 @@ if __name__ == '__main__':
     payroll.print_vals()
 
     payroll.employees[0].generate_payment(payroll.current_date, payroll.calendar)
-    # payroll.employees[1].generate_payment(payroll.current_date, payroll.calendar)
+    payroll.employees[1].generate_payment(payroll.current_date, payroll.calendar)

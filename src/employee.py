@@ -17,7 +17,7 @@ def hash_date(date: datetime.date):
     
     return days
 
-calendar.setfirstweekday(calendar.SUNDAY)
+# calendar.setfirstweekday(calendar.SUNDAY)
 
 class Employee:
     def __init__(self, name: str, address: str, id: int = 0):
@@ -42,7 +42,7 @@ class Employee:
 
 # * Specialized classes * #
 
-def next_month(date):
+def next_month(date: datetime.date):
     maxmonth = calendar.monthrange(date.year, date.month)[1]
     next_maxmonth = calendar.monthrange(date.year, date.month + 1)[1]
     next_days = maxmonth
@@ -64,9 +64,82 @@ def get_day_of_month(date, date_to_get):
 
 def get_day_of_week(date, quantity, weekday):
     this_month = calendar.monthcalendar(date.year, date.month)
+    this_day = date.day
 
-    val = next(i for i, x in enumerate(this_month) if x == date.day)
-    print(val)
+    location = (0,0)
+    for row, week in enumerate(this_month):
+        done = False
+        for column, day in enumerate(week):
+            if day == this_day:
+                location = (row, column)
+                done = True
+                break
+        if done:
+            break
+    
+    other_day = 0
+    outofbounds = False
+    hasalready = this_day >= this_month[location[0]][weekday]
+    haszeros = ~bool(this_month[-1][-1])
+
+    index = location[0] - 1 + hasalready
+    for _ in range(quantity):
+        index += 1
+        try:
+            other_day = this_month[index][weekday]
+        except:
+            outofbounds = True
+            index = haszeros
+        if other_day == 0:
+            index = 0
+        if other_day == 0 or outofbounds:
+            outofbounds = False
+            date = next_month(date)
+            this_month = calendar.monthcalendar(date.year, date.month)
+            haszeros = ~bool(this_month[-1][-1])
+            other_day = this_month[index][weekday]
+    
+    return datetime.date(date.year, date.month, other_day)
+
+def schedule_paymethod(date: datetime.date, entry: str):
+    monthly = 0
+    weekly = 1
+    func_dict = {
+        'monthly': monthly, 'weekly': weekly,
+        'mensalmente': monthly, 'semanalmente': weekly,
+        'mensal': monthly, 'semanal': weekly
+    }
+
+    weekday_dict = {
+        'segunda': 0, 'terca': 1, 'quarta': 2, 'quinta': 3,
+        'sexta': 4, 'sabado': 5, 'domingo': 6,
+        'monday': 0, 'tuesday': 1, 'wednesday': 2, 'thursday': 3,
+        'friday': 4, 'saturday': 5, 'sunday': 6
+    }
+
+    parsed_entry = entry.split(' ')
+    if len(parsed_entry) == 1:
+        if entry == 'monthly':
+            entry = 'monthly $'
+        elif entry == 'weekly':
+            entry = 'weekly 1 friday'
+        elif entry == 'bi-weekly':
+            entry = 'weekly 2 friday'
+        parsed_entry = entry.split(' ')
+
+    func_selection = func_dict[parsed_entry[0]]
+
+    if parsed_entry[1] != '$':
+        entry_first_arg = int(parsed_entry[1])
+    else:
+        entry_first_arg = -1
+
+    if func_selection == monthly:
+        out_date = get_day_of_month(date, entry_first_arg)
+    elif func_selection == weekly:
+        out_date = get_day_of_week(date, entry_first_arg, weekday_dict[parsed_entry[2]])
+
+    return out_date
 
 class Salaried(Employee):
     def __init__(self, name, address, monthly_wage, id = 0):
@@ -77,15 +150,10 @@ class Salaried(Employee):
         self.monthly_wage = monthly_wage
 
     def generate_payment(self, current_date, current_calendar):
-        if self.payment_method == 'monthly':
-            payment_date = get_day_of_month(current_date, -1)
-        current_calendar[hash_date(payment_date)]['update'].append((SALARIED_PAYMENT, self.id))
-        cal = calendar.monthrange(current_date.year, current_date.month)
+        payment_date = schedule_paymethod(current_date, self.payment_method)
 
-        if self.payment_method == 'weekly':
-            print('this is the weekly')
-
-        print(cal)
+        print('payment_date', payment_date)
+        current_calendar[hash_date(payment_date)]['update'].append(self.id)
 
         print('Generated assalaried payment of:', self.monthly_wage)
 
