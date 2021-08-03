@@ -146,14 +146,17 @@ class Employee:
         self.scheduled_date = payment_date
     
     def delete(self, c_calendar):
-        index = next(i for i, x in enumerate(c_calendar[hash_date(self.scheduled_date)]['update']) if x == self.id)
-        del c_calendar[hash_date(self.scheduled_date)]['update'][index]
+        index = next(i for i, x in enumerate(c_calendar[hash_date(self.scheduled_date)]['schedule']) if x == self.id)
+        del c_calendar[hash_date(self.scheduled_date)]['schedule'][index]
+
+    def print_generated_payment(self, value: int):
+        print(f'Generated payment of: {self.name} R$ {value}')
 
     def generate_payment(self, current_date, current_calendar):
         raise NotImplementedError()
 
 def add_schedule_date(id: int, date: datetime.date, current_calendar):
-    current_calendar[hash_date(date)]['update'].append(id)
+    current_calendar[hash_date(date)]['schedule'].append(id)
 
 class Salaried(Employee):
     def __init__(self, name, address, monthly_wage, id = 0):
@@ -165,7 +168,8 @@ class Salaried(Employee):
         self.monthly_wage = monthly_wage
 
     def generate_payment(self, current_date, current_calendar):
-        print('Generated salary payment of:', self.name, '_ R$', self.monthly_wage)
+        value = self.monthly_wage - self.owing_qnt
+        super().print_generated_payment(value)
 
         super().generate_schedule_paymethod(current_date, current_calendar)
 
@@ -188,15 +192,15 @@ class Commissioned(Employee):
 
     def generate_payment(self, current_date, current_calendar):
         while self.last_date != current_date:
-            ax = [(i, x) for i, x in enumerate(current_calendar[hash_date(self.last_date)]['schedule']) if x[1] == self.id]
+            ax = [(i, x) for i, x in enumerate(current_calendar[hash_date(self.last_date)]['update']) if x[1] == self.id]
             for val in reversed(ax):
                 self.add_commission(val[1][2])
-                del current_calendar[hash_date(self.last_date)]['schedule'][val[0]]
+                del current_calendar[hash_date(self.last_date)]['update'][val[0]]
             self.last_date += datetime.timedelta(days=1)
         
-        value = self.added_price + self.base_salary
+        value = self.added_price + self.base_salary - self.owing_qnt
+        super().print_generated_payment(value)
         self.added_price = 0
-        print('Generated payment of:', self.name, '_ R$', value)
 
         super().generate_schedule_paymethod(current_date, current_calendar)
 
@@ -218,7 +222,8 @@ class Hourly(Employee):
         self.added_wage += value
 
     def generate_payment(self, current_date, current_calendar):
-        print('Generated payment of:', self.name, '_ R$', self.added_wage)
+        value = self.added_wage - self.owing_qnt
+        super().print_generated_payment(value)
 
         self.added_wage = 0
 

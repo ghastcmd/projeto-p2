@@ -14,25 +14,28 @@ class PayrollSystem:
         self.employees = []
         self.calendar = {}
         for i in range(366):
-            self.calendar[i] = {'update': [], 'schedule': []}
+            self.calendar[i] = {'schedule': [], 'update': []}
 
         self.current_day = self.calendar[hash_date(self.current_date)]
+
+    # TODO: Need to serialize it
+    def run_today_payroll(self):
+        iter_thru = [(i,x) for i, x in enumerate(self.calendar[hash_date(self.current_date)]['schedule'])]
+        for i, id in reversed(iter_thru):
+            employee = self.search_employee(id)
+            employee.generate_payment(self.current_date, self.calendar)
+            del self.calendar[hash_date(self.current_date)]['schedule'][i]
 
     def update_day(self, add_days = 1):
         self.current_date += datetime.timedelta(days=add_days)
         self.current_day = self.calendar[hash_date(self.current_date)]
-        iter_thru = [(i,x) for i, x in enumerate(self.calendar[hash_date(self.current_date)]['update'])]
-        for i, id in reversed(iter_thru):
-            employee = self.search_employee(id)
-            employee.generate_payment(self.current_date, self.calendar)
-            del self.calendar[hash_date(self.current_date)]['update'][i]
-            print(i, employee)
 
     def print_vals(self):
         print('------------ list of employees -------------')
         for i, employee in enumerate(self.employees):
             print(f'{i}: {employee}')
 
+    # TODO: Need to serialize it
     def add_employee(self, name: str, address: str, type: str, attr: int):
         types = ['salaried', 'commissioned', 'hourly']
         assert type in types
@@ -54,21 +57,25 @@ class PayrollSystem:
     def search_employee_index(self, id: int):
         return next((i, x) for i, x in enumerate(self.employees) if x.id == id)
 
+    # TODO: Need to serialize it
     def del_employee(self, id: int):
         index, _ = self.search_employee_index(id)
         self.employees[index].delete(self.calendar)
         del self.employees[index]
 
+    # TODO: Need to serialize it
     def launch_timecard(self, id: int, hours: int):
         employee = self.search_employee(id)
         employee.add_hourwage(hours)
 
+    # TODO: Need to serialize it
     def launch_sell_result(self, id: int, price: int, date: datetime.date = current_date, date_offset: int = 0):
         employee = self.search_employee(id)
         if employee.type != 'Commissioned':
             raise Exception('Incorrect employee type')
-        self.calendar[hash_date(date + datetime.timedelta(days=date_offset))]['schedule'].append((self.SELL_RESULT, employee.id, price))
+        self.calendar[hash_date(date + datetime.timedelta(days=date_offset))]['update'].append((self.SELL_RESULT, employee.id, price))
 
+    # TODO: Need to serialize it
     # charge must be a whole value, not a percentage of wage
     def launch_service_charge(self, id: int, charge: int):
         employee = self.search_employee(id)
@@ -80,6 +87,7 @@ class PayrollSystem:
             if self.calendar[key] != {'schedule':[], 'update':[]}:
                 print(str(key) + ':', self.calendar[key])
 
+    # TODO: Need to serialize it
     def change_employee_data(self, id: int, name: str = 0, address: str = 0, type: str = 0, payment_method: str = 0, syndicate: bool = 0, syndicate_id: int = 0, syndicate_charge: int = 0):
         employee = self.search_employee(id)
         if name:

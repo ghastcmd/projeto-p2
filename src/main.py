@@ -1,13 +1,8 @@
 from payroll import PayrollSystem
 
-# calendar.isleap is to see if a year is leap, basically it runs a year % 4
-# using the module datetime to use the datetime.date data type
-# to add a day to datetime.date format is to add the datetime.timedelta(day=1)
-# using the calendar.monthcalendar function to get array of days per month
-#     [0,1,2,3,4,5,6], [7, ...] ...
-
-def get_date_format(date):
-    return date.year, date.month, date.day
+class queue_system:
+    def __init__(self):
+        return
 
 if __name__ == '__main__':
     payroll = PayrollSystem()
@@ -44,5 +39,6 @@ if __name__ == '__main__':
 
     for _ in range(30):
         payroll.update_day()
+        payroll.run_today_payroll()
         print('current_day:', hash_date(payroll.current_date))
         payroll.print_calendar()

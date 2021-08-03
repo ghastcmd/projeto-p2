@@ -25,9 +25,9 @@ Consiste em gerenciar os dados dos empregados e os pagamentos à estes empregado
   * São pagos a cada 2 sexta-feiras
     * Nesse período devem receber o equivalente a 2 semanas de salário fixo somados às comissões do período
 
-  * Escolher o método de pagamento
-    * Receber um cheque pelo correio
-    * Cheque em mãos
+* Escolher o método de pagamento
+  * Receber um cheque pelo correio
+  * Cheque em mãos
   * Depósito em conta bancária
 
 * Alguns funcionários pertencem ao sindicato, o sindicato:
