@@ -125,6 +125,7 @@ class Employee:
         self.address = address
 
         self.payment_method = ''
+        self.type = ''
         self.syndicate = False
         self.syndicate_id = 0
         self.syndicate_charge = 0
@@ -133,7 +134,7 @@ class Employee:
         self.owing_qnt = 0
 
     def __str__(self):
-        return f'{self.id}, {self.name}, {self.address}'
+        return f'{self.id}, {self.name}, {self.address}, {self.payment_method}, {self.type}'
 
     def owing(self, owing: int):
         self.owing_qnt += owing
@@ -158,6 +159,7 @@ class Salaried(Employee):
     def __init__(self, name, address, monthly_wage, id = 0):
         super().__init__(name, address, id)
 
+        self.type = 'Salaried'
         self.payment_method = 'monthly'
 
         self.monthly_wage = monthly_wage
@@ -168,20 +170,30 @@ class Salaried(Employee):
         super().generate_schedule_paymethod(current_date, current_calendar)
 
 class Commissioned(Employee):
-    def __init__(self, name, address, commission, id = 0):
+    def __init__(self, name, address, commission, date, id = 0):
         super().__init__(name, address, id)
 
+        self.type = 'Commissioned'
         self.payment_method = 'bi-weekly'
 
         self.base_salary = 900
         self.added_price = 0
         self.commission_rate = commission
 
+        self.last_date = date
+
     def add_commission(self, price):
         value = price * (self.commission_rate / 100)
         self.added_price += value
 
     def generate_payment(self, current_date, current_calendar):
+        while self.last_date != current_date:
+            ax = [(i, x) for i, x in enumerate(current_calendar[hash_date(self.last_date)]['schedule']) if x[1] == self.id]
+            for val in reversed(ax):
+                self.add_commission(val[1][2])
+                del current_calendar[hash_date(self.last_date)]['schedule'][val[0]]
+            self.last_date += datetime.timedelta(days=1)
+        
         value = self.added_price + self.base_salary
         self.added_price = 0
         print('Generated payment of:', self.name, '_ R$', value)
@@ -192,6 +204,7 @@ class Hourly(Employee):
     def __init__(self, name, address, hour_wage, id = 0):
         super().__init__(name, address, id)
 
+        self.type = 'Hourly'
         self.payment_method = 'weekly'
         self.hour_wage = hour_wage
         self.added_wage = 0

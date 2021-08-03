@@ -22,10 +22,14 @@ class PayrollSystem:
         self.current_date += datetime.timedelta(days=add_days)
         self.current_day = self.calendar[hash_date(self.current_date)]
 
+        for id in self.calendar[hash_date(self.current_date)]['update']:
+            employee = self.search_employees(id)
+            employee.generate_schedule_paymethod(self.current_date, self.calendar)
+
     def print_vals(self):
         print('------------ list of employees -------------')
-        for employee in self.employees:
-            print(employee.__str__())
+        for i, employee in enumerate(self.employees):
+            print(f'{i}: {employee}')
 
     def add_employee(self, name: str, address: str, type: str, attr: int):
         types = ['salaried', 'commissioned', 'hourly']
@@ -34,7 +38,7 @@ class PayrollSystem:
         if type == 'salaried':
             self.employees.append(Salaried(name, address, attr, self.count))
         elif type == 'commissioned':
-            self.employees.append(Commissioned(name, address, attr, self.count))
+            self.employees.append(Commissioned(name, address, attr, self.current_date, self.count))
         elif type == 'hourly':
             self.employees.append(Hourly(name, address, attr, self.count))
         

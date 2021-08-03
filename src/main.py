@@ -44,4 +44,6 @@ if __name__ == '__main__':
     payroll.print_calendar()
 
     assert payroll.employees[3].added_wage == 210
-    
+    payroll.employees[2].generate_payment(payroll.current_date, payroll.calendar)
+
+    payroll.print_calendar()
