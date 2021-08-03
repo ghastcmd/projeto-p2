@@ -47,6 +47,7 @@ class PayrollSystem:
 
     def del_employee(self, id: int):
         index = next(i for i, x in enumerate(self.employees) if x.id == id)
+        self.employees[index].delete(self.calendar)
         del self.employees[index]
 
     def launch_timecard(self, id: int, hours: int):

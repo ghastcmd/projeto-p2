@@ -142,6 +142,12 @@ class Employee:
         payment_date = schedule_paymethod(date, self.payment_method)
         add_schedule_date(self.id, payment_date, c_calendar)
 
+        self.scheduled_date = payment_date
+    
+    def delete(self, c_calendar):
+        index = next(i for i, x in enumerate(c_calendar[hash_date(self.scheduled_date)]['update']) if x == self.id)
+        del c_calendar[hash_date(self.scheduled_date)]['update'][index]
+
     def generate_payment(self, current_date, current_calendar):
         raise NotImplementedError()
 
