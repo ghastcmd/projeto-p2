@@ -1,8 +1,8 @@
 # Projeto de P2 (programação orientada à objeto)
 
-O objetivo do trabalho é seguir as especificações do arquivo [Folha_de_pagamento.pdf] para poder escrever as classes necessárias apra implementar o sistema.
+O objetivo do trabalho é seguir as especificações do arquivo [Folha_de_Pagamento.pdf] para poder escrever as classes necessárias apra implementar o sistema.
 
-[Folha_de_pagamento.pdf]: <./Folha_de_Pagamento.pdf>
+[Folha_de_Pagamento.pdf]: <./Folha_de_Pagamento.pdf>
 
 ## Sistema de folha de pagamento
 
