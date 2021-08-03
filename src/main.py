@@ -15,33 +15,51 @@ class QueueSystem:
     def __init__(self, payroll: PayrollSystem):
         self.state_save = [(self.PAYROLL_STATE, (payroll))]
         self.states_index = [0]
-        self.current_index = 0
+        self.current_index = 1
 
     def add_employee(self, name, address, type, parameter):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append((self.ADD_EMPLOYEE, (name, address, type, parameter)))
 
     def del_employee(self, id):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append((self.DEL_EMPLOYEE, [id]))
     
     def launch_timecard(self, id, hours):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append((self.LAUNCH_TIMECARD, (id, hours)))
     
     def launch_selling(self, id, price, date):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append((self.LAUNCH_SELLING, (id, price, date)))
     
     def launch_service_charge(self, id, charge):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append((self.LAUNCH_SERVICE_CHARGE, (id, charge)))
     
     def change_employee_data(self, id, data):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append((self.CHANGE_EMPLOYEE_DATA, (id, data)))
     
     def change_employee_type(self, id, type):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append((self.CHANGE_EMPLOYEE_TYPE, (id, type)))
 
     def run_today_payroll(self):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append([self.RUN_TODAY_PAYROLL])
 
     def update_day(self):
+        self.overwrite_undo()
+        self.current_index += 1
         self.state_save.append([self.UPDATE_DAY])
 
     def print(self):
@@ -58,7 +76,7 @@ class QueueSystem:
             self.UPDATE_DAY: 'UPDATE_DAY',
         }
 
-        for x in self.state_save:
+        for x in self.state_save[:self.current_index]:
             print(print_dict[x[0]], x)
 
     def last_payroll(self):
@@ -71,6 +89,7 @@ class QueueSystem:
         self.last_payroll().print_calendar()
 
     def write(self):
+        self.overwrite_undo()
         function_dict = {
             self.ADD_EMPLOYEE: PayrollSystem.add_employee,
             self.DEL_EMPLOYEE: PayrollSystem.del_employee,
@@ -85,20 +104,32 @@ class QueueSystem:
 
         index = self.states_index[-1]
         current_payroll = self.state_save[index][1]
-        for state in self.state_save[index + 1 : len(self.state_save)]:
+        for state in self.state_save[index + 1 : self.current_index]:
             func = function_dict[state[0]]
             if type(state) == list:
                 func(current_payroll)
             else:
                 func(current_payroll, *state[1])
 
-    def test_func(self):
-        payroll = self.last_payroll()
-        val = payroll.employees[3].added_wage
-        print('added_wage from employee 3:', val)
+        self.state_save.append((self.PAYROLL_STATE, current_payroll))
+        self.states_index.append(self.current_index)
+        self.current_index += 1
 
-def foo(name: str, address: str, type: str, attr: int):
-    print(name, address, type, attr)
+    def overwrite_undo(self):
+        if self.current_index != len(self.state_save):
+            inter_arr = [i for i, x in enumerate(self.state_save[self.current_index:len(self.state_save)])]
+            for x in reversed(inter_arr):
+                del self.state_save[self.current_index + x]
+    
+    def undo(self):
+        if self.current_index == 1:
+            return
+        self.current_index -= 1
+
+    def redo(self):
+        if self.current_index == len(self.state_save):
+            return
+        self.current_index += 1
 
 if __name__ == '__main__':
     system = QueueSystem(PayrollSystem())
@@ -121,16 +152,22 @@ if __name__ == '__main__':
     system.launch_selling(4, 1200, 'current')
     system.launch_selling(4, 1200, 'current')
 
-    for _ in range(30):
+    for _ in range(2):
         system.update_day()
         system.run_today_payroll()
 
     system.print()
     system.write()
 
+    system.add_employee('zinael', 'via str. 1', 'commissioned', 12)
+    system.undo()
+    system.redo()
+
+    system.write()
+    system.print()
+
     system.print_payroll()
     system.print_payroll_calendar()
-    system.test_func()
 
 if __name__ == '__main__ 2':
     payroll = PayrollSystem()
