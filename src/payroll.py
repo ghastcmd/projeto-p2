@@ -69,11 +69,13 @@ class PayrollSystem:
         employee.add_hourwage(hours)
 
     # TODO: Need to serialize it
-    def launch_sell_result(self, id: int, price: int, date: datetime.date = current_date, date_offset: int = 0):
+    def launch_sell_result(self, id: int, price: int, date = current_date):
+        if date == 'current':
+            date = self.current_date
         employee = self.search_employee(id)
         if employee.type != 'Commissioned':
             raise Exception('Incorrect employee type')
-        self.calendar[hash_date(date + datetime.timedelta(days=date_offset))]['update'].append((self.SELL_RESULT, employee.id, price))
+        self.calendar[hash_date(date)]['update'].append((self.SELL_RESULT, employee.id, price))
 
     # TODO: Need to serialize it
     # charge must be a whole value, not a percentage of wage

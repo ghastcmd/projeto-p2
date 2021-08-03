@@ -1,10 +1,138 @@
 from payroll import PayrollSystem
 
-class queue_system:
-    def __init__(self):
-        return
+class QueueSystem:
+    ADD_EMPLOYEE = 0
+    DEL_EMPLOYEE = 1
+    LAUNCH_TIMECARD = 2
+    LAUNCH_SELLING = 3
+    LAUNCH_SERVICE_CHARGE = 4
+    CHANGE_EMPLOYEE_DATA = 5
+    CHANGE_EMPLOYEE_TYPE = 6
+    RUN_TODAY_PAYROLL = 7
+    PAYROLL_STATE = 8
+    UPDATE_DAY = 9
+
+    def __init__(self, payroll: PayrollSystem):
+        self.state_save = [(self.PAYROLL_STATE, (payroll))]
+        self.states_index = [0]
+        self.current_index = 0
+
+    def add_employee(self, name, address, type, parameter):
+        self.state_save.append((self.ADD_EMPLOYEE, (name, address, type, parameter)))
+
+    def del_employee(self, id):
+        self.state_save.append((self.DEL_EMPLOYEE, [id]))
+    
+    def launch_timecard(self, id, hours):
+        self.state_save.append((self.LAUNCH_TIMECARD, (id, hours)))
+    
+    def launch_selling(self, id, price, date):
+        self.state_save.append((self.LAUNCH_SELLING, (id, price, date)))
+    
+    def launch_service_charge(self, id, charge):
+        self.state_save.append((self.LAUNCH_SERVICE_CHARGE, (id, charge)))
+    
+    def change_employee_data(self, id, data):
+        self.state_save.append((self.CHANGE_EMPLOYEE_DATA, (id, data)))
+    
+    def change_employee_type(self, id, type):
+        self.state_save.append((self.CHANGE_EMPLOYEE_TYPE, (id, type)))
+
+    def run_today_payroll(self):
+        self.state_save.append([self.RUN_TODAY_PAYROLL])
+
+    def update_day(self):
+        self.state_save.append([self.UPDATE_DAY])
+
+    def print(self):
+        print_dict = {
+            self.ADD_EMPLOYEE: 'ADD_EMPLOYEE',
+            self.DEL_EMPLOYEE: 'DEL_EMPLOYEE',
+            self.LAUNCH_TIMECARD: 'LAUNCH_TIMECARD',
+            self.LAUNCH_SELLING: 'LAUNCH_SELLING',
+            self.LAUNCH_SERVICE_CHARGE: 'LAUNCH_SERVICE_CHARGE',
+            self.CHANGE_EMPLOYEE_DATA: 'CHANGE_EMPLOYEE_DATA',
+            self.CHANGE_EMPLOYEE_TYPE: 'CHANGE_EMPLOYEE_TYPE',
+            self.RUN_TODAY_PAYROLL: 'RUN_TODAY_PAYROLL',
+            self.PAYROLL_STATE: 'PAYROLL_STATE',
+            self.UPDATE_DAY: 'UPDATE_DAY',
+        }
+
+        for x in self.state_save:
+            print(print_dict[x[0]], x)
+
+    def last_payroll(self):
+        return self.state_save[self.states_index[-1]][1]
+
+    def print_payroll(self):
+        self.last_payroll().print_vals()
+
+    def print_payroll_calendar(self):
+        self.last_payroll().print_calendar()
+
+    def write(self):
+        function_dict = {
+            self.ADD_EMPLOYEE: PayrollSystem.add_employee,
+            self.DEL_EMPLOYEE: PayrollSystem.del_employee,
+            self.LAUNCH_TIMECARD: PayrollSystem.launch_timecard,
+            self.LAUNCH_SELLING: PayrollSystem.launch_sell_result,
+            self.LAUNCH_SERVICE_CHARGE: PayrollSystem.launch_service_charge,
+            self.CHANGE_EMPLOYEE_DATA: PayrollSystem.change_employee_data,
+            self.CHANGE_EMPLOYEE_TYPE: self.change_employee_type,
+            self.RUN_TODAY_PAYROLL: PayrollSystem.run_today_payroll,
+            self.UPDATE_DAY: PayrollSystem.update_day,
+        }
+
+        index = self.states_index[-1]
+        current_payroll = self.state_save[index][1]
+        for state in self.state_save[index + 1 : len(self.state_save)]:
+            func = function_dict[state[0]]
+            if type(state) == list:
+                func(current_payroll)
+            else:
+                func(current_payroll, *state[1])
+
+    def test_func(self):
+        payroll = self.last_payroll()
+        val = payroll.employees[3].added_wage
+        print('added_wage from employee 3:', val)
+
+def foo(name: str, address: str, type: str, attr: int):
+    print(name, address, type, attr)
 
 if __name__ == '__main__':
+    system = QueueSystem(PayrollSystem())
+
+    system.add_employee('simple', 'via st. 11', 'salaried', 1230)
+    system.add_employee('alelo', 'maritona st. 19', 'hourly', 12)
+    system.add_employee('another', 'via st. 12', 'salaried', 1240)
+    system.add_employee('Geredos', 'maritnoa elwoe st. 1', 'commissioned', 13)
+    system.add_employee('alelo', 'maritona st. 19', 'hourly', 12)
+
+    system.del_employee(2)
+    system.launch_timecard(5, 9)
+
+    system.update_day()
+
+    system.launch_timecard(5, 8)
+    system.launch_service_charge(1, 100)
+
+    system.launch_selling(4, 2000, 'current')
+    system.launch_selling(4, 1200, 'current')
+    system.launch_selling(4, 1200, 'current')
+
+    for _ in range(30):
+        system.update_day()
+        system.run_today_payroll()
+
+    system.print()
+    system.write()
+
+    system.print_payroll()
+    system.print_payroll_calendar()
+    system.test_func()
+
+if __name__ == '__main__ 2':
     payroll = PayrollSystem()
 
     payroll.add_employee('simple', 'via st. 11', 'salaried', 1230)
@@ -29,9 +157,9 @@ if __name__ == '__main__':
     # payroll.change_employee_data(3, name='simple_name', syndicate=True, type='Salaried', payment_method='weekly')
     payroll.print_vals()
 
-    payroll.launch_sell_result(4, 2000)
-    payroll.launch_sell_result(4, 1200)
-    payroll.launch_sell_result(4, 1200, date_offset=3)
+    payroll.launch_sell_result(4, 2000, 'current')
+    payroll.launch_sell_result(4, 1200, 'current')
+    payroll.launch_sell_result(4, 1200, 'current')
 
     payroll.print_calendar()
 
