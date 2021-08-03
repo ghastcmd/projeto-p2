@@ -21,10 +21,12 @@ class PayrollSystem:
     def update_day(self, add_days = 1):
         self.current_date += datetime.timedelta(days=add_days)
         self.current_day = self.calendar[hash_date(self.current_date)]
-
-        for id in self.calendar[hash_date(self.current_date)]['update']:
-            employee = self.search_employees(id)
-            employee.generate_schedule_paymethod(self.current_date, self.calendar)
+        iter_thru = [(i,x) for i, x in enumerate(self.calendar[hash_date(self.current_date)]['update'])]
+        for i, id in reversed(iter_thru):
+            employee = self.search_employee(id)
+            employee.generate_payment(self.current_date, self.calendar)
+            del self.calendar[hash_date(self.current_date)]['update'][i]
+            print(i, employee)
 
     def print_vals(self):
         print('------------ list of employees -------------')
@@ -49,8 +51,11 @@ class PayrollSystem:
     def search_employee(self, id: int):
         return next(x for x in self.employees if x.id == id)
 
+    def search_employee_index(self, id: int):
+        return next((i, x) for i, x in enumerate(self.employees) if x.id == id)
+
     def del_employee(self, id: int):
-        index = next(i for i, x in enumerate(self.employees) if x.id == id)
+        index, _ = self.search_employee_index(id)
         self.employees[index].delete(self.calendar)
         del self.employees[index]
 
@@ -60,6 +65,8 @@ class PayrollSystem:
 
     def launch_sell_result(self, id: int, price: int, date: datetime.date = current_date, date_offset: int = 0):
         employee = self.search_employee(id)
+        if employee.type != 'Commissioned':
+            raise Exception('Incorrect employee type')
         self.calendar[hash_date(date + datetime.timedelta(days=date_offset))]['schedule'].append((self.SELL_RESULT, employee.id, price))
 
     # charge must be a whole value, not a percentage of wage

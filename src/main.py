@@ -25,17 +25,14 @@ if __name__ == '__main__':
     payroll.print_vals()
 
     payroll.launch_timecard(5, 9)
-    payroll.launch_sell_result(1, 1200, date_offset=1)
+    # payroll.launch_sell_result(1, 1200, date_offset=1)
     payroll.update_day()
     payroll.launch_timecard(5, 8)
     payroll.launch_service_charge(1, 100)
     payroll.print_calendar()
 
-    payroll.change_employee_data(3, name='simple_name', syndicate=True, type='salaried', payment_method='weekly')
+    # payroll.change_employee_data(3, name='simple_name', syndicate=True, type='Salaried', payment_method='weekly')
     payroll.print_vals()
-
-    # payroll.employees[0].generate_payment(payroll.current_date, payroll.calendar)
-    # payroll.employees[1].generate_payment(payroll.current_date, payroll.calendar)
 
     payroll.launch_sell_result(4, 2000)
     payroll.launch_sell_result(4, 1200)
@@ -43,7 +40,9 @@ if __name__ == '__main__':
 
     payroll.print_calendar()
 
-    assert payroll.employees[3].added_wage == 210
-    payroll.employees[2].generate_payment(payroll.current_date, payroll.calendar)
+    from employee import hash_date
 
-    payroll.print_calendar()
+    for _ in range(30):
+        payroll.update_day()
+        print('current_day:', hash_date(payroll.current_date))
+        payroll.print_calendar()
