@@ -180,10 +180,16 @@ if __name__ == '__main__':
     system.change_employee_data(3, {'name': 'Ramon', 'syndicate': True, 'syndicate_charge': 100, 'syndicate_id': 1})
 
     system.write()
-    # system.print()
+    system.print()
 
     # system.print_payroll()
     # system.print_payroll_calendar()
+    system.print_payroll()
+    system.last_payroll().change_employee_type(3, 'commissioned')
+
+    system.print_payroll()
+    # system.last_payroll().employees[]
+
 
 if __name__ == '__main__ 2':
     payroll = PayrollSystem()

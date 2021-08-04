@@ -25,10 +25,6 @@ def employee_paymethod(paymethod):
 
 
 class PayrollSystem:
-    TIMECARD = 0
-    SELL_RESULT = 1
-    SERVICE_TAX = 2
-
     current_date = datetime.date.today()
 
     def __init__(self):
@@ -93,7 +89,7 @@ class PayrollSystem:
         employee = self.search_employee(id)
         if employee.type != 'Commissioned':
             raise Exception('Incorrect employee type')
-        self.calendar[hash_date(date)]['update'].append((self.SELL_RESULT, employee.id, price))
+        self.calendar[hash_date(date)]['update'].append(('selling', employee.id, price))
 
     # charge must be a whole value, not a percentage of wage
     def launch_service_charge(self, id: int, charge: int):
@@ -121,3 +117,38 @@ class PayrollSystem:
             employee.syndicate_id = syndicate_id
         if syndicate_charge:
             employee.syndicate_charge = syndicate_charge
+    
+    def get_employee_wage(self, employee: Employee):
+        if employee.type.lower() == 'salaried':
+            return employee.monthly_wage
+        elif employee.type.lower() == 'commissioned':
+            return employee.base_salary
+        elif employee.type.lower() == 'hourly':
+            return employee.hourly_wage * 28
+
+    def change_employee_type(self, id, type):
+        type_dict = {
+            'salaried': 'Salaried',
+            'commissioned': 'Commissioned',
+            'hourly': 'Hourly',
+        }
+
+        type_arr = ['salaried', 'commissioned', 'hourly']
+
+        assert type in type_arr
+
+        index, employee = self.search_employee_index(id)
+        name = employee.name
+        address = employee.address
+        wage = self.get_employee_wage(employee)
+        employee.delete(self.calendar)
+
+        if type == 'salaried':
+            self.employees[index] = Salaried(name, address, wage, id)
+        elif type == 'commissioned':
+            self.employees[index] = Commissioned(name, address, wage, self.current_date, id)
+        elif type == 'hourly':
+            self.employees[index] = Hourly(name, address, wage, id)
+        
+        self.employees[index].generate_schedule_paymethod(self.current_date, self.calendar)
+        self.employees[index].payment_method = employee_paymethod('deposit in bank account')
