@@ -1,4 +1,5 @@
 from payroll import PayrollSystem
+import copy
 
 class QueueSystem:
     ADD_EMPLOYEE = 0
@@ -103,7 +104,7 @@ class QueueSystem:
         }
 
         index = self.states_index[-1]
-        current_payroll = self.state_save[index][1]
+        current_payroll = copy.deepcopy(self.state_save[index][1])
         for state in self.state_save[index + 1 : self.current_index]:
             func = function_dict[state[0]]
             if type(state) == list:
@@ -117,19 +118,29 @@ class QueueSystem:
 
     def overwrite_undo(self):
         if self.current_index != len(self.state_save):
-            inter_arr = [i for i, x in enumerate(self.state_save[self.current_index:len(self.state_save)])]
+            inter_arr = [i for i, _ in enumerate(self.state_save[self.current_index:len(self.state_save)])]
             for x in reversed(inter_arr):
                 del self.state_save[self.current_index + x]
     
     def undo(self):
         if self.current_index == 1:
             return
+        
+        if self.state_save[self.current_index-1][0] == self.PAYROLL_STATE:
+            del self.states_index[-1]
+        
         self.current_index -= 1
+
 
     def redo(self):
         if self.current_index == len(self.state_save):
             return
+        
+        if self.state_save[self.current_index][0] == self.PAYROLL_STATE:
+            self.states_index.append(self.current_index)
+
         self.current_index += 1
+
 
 if __name__ == '__main__':
     system = QueueSystem(PayrollSystem())
@@ -160,6 +171,7 @@ if __name__ == '__main__':
     system.write()
 
     system.add_employee('zinael', 'via str. 1', 'commissioned', 12)
+    system.undo()
     system.undo()
     system.redo()
 
