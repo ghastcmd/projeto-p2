@@ -43,7 +43,7 @@ class QueueSystem:
         self.current_index += 1
         self.state_save.append((self.LAUNCH_SERVICE_CHARGE, (id, charge)))
     
-    def change_employee_data(self, id, data):
+    def change_employee_data(self, id, data: dict):
         self.overwrite_undo()
         self.current_index += 1
         self.state_save.append((self.CHANGE_EMPLOYEE_DATA, (id, data)))
@@ -109,6 +109,8 @@ class QueueSystem:
             func = function_dict[state[0]]
             if type(state) == list:
                 func(current_payroll)
+            elif state[0] == self.CHANGE_EMPLOYEE_DATA:
+                func(current_payroll, state[1][0], **state[1][1])
             else:
                 func(current_payroll, *state[1])
 
@@ -167,7 +169,7 @@ if __name__ == '__main__':
         system.update_day()
         system.run_today_payroll()
 
-    system.print()
+    # system.print()
     system.write()
 
     system.add_employee('zinael', 'via str. 1', 'commissioned', 12)
@@ -175,11 +177,13 @@ if __name__ == '__main__':
     system.undo()
     system.redo()
 
-    system.write()
-    system.print()
+    system.change_employee_data(3, {'name': 'Ramon', 'syndicate': True, 'syndicate_charge': 100, 'syndicate_id': 1})
 
-    system.print_payroll()
-    system.print_payroll_calendar()
+    system.write()
+    # system.print()
+
+    # system.print_payroll()
+    # system.print_payroll_calendar()
 
 if __name__ == '__main__ 2':
     payroll = PayrollSystem()

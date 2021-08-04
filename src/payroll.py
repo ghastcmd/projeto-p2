@@ -1,6 +1,28 @@
 from employee import *
+from unidecode import unidecode
 
 # * Starting payroll system * #
+
+def employee_paymethod(paymethod):
+    paymethod_arr = [
+        'deposit in bank account', 'check by mail', 'check by hand',
+        'deposito em conta bancaria', 'cheque pelo correio',
+        'cheque em maos'
+    ]
+
+    assert unidecode(paymethod.lower()) in paymethod_arr
+
+    paymethod_dict = {
+        'deposit in bank account': 'Deposit in bank account', 
+        'check by mail': 'Check by mail',
+        'check by hand': 'Check by hand',
+        'deposito em conta bancaria': 'Depósito em conta bancária',
+        'cheque pelo correio': 'Cheque pelo correio',
+        'cheque em maos': 'Cheque em mãos',
+    }
+
+    return paymethod_dict[unidecode(paymethod.lower())]
+
 
 class PayrollSystem:
     TIMECARD = 0
@@ -18,7 +40,6 @@ class PayrollSystem:
 
         self.current_day = self.calendar[hash_date(self.current_date)]
 
-    # TODO: Need to serialize it
     def run_today_payroll(self):
         iter_thru = [(i,x) for i, x in enumerate(self.calendar[hash_date(self.current_date)]['schedule'])]
         for i, id in reversed(iter_thru):
@@ -35,7 +56,6 @@ class PayrollSystem:
         for i, employee in enumerate(self.employees):
             print(f'{i}: {employee}')
 
-    # TODO: Need to serialize it
     def add_employee(self, name: str, address: str, type: str, attr: int):
         types = ['salaried', 'commissioned', 'hourly']
         assert type in types
@@ -48,6 +68,7 @@ class PayrollSystem:
             self.employees.append(Hourly(name, address, attr, self.count))
         
         self.employees[-1].generate_schedule_paymethod(self.current_date, self.calendar)
+        self.employees[-1].payment_method = employee_paymethod('deposit in bank account')
 
         self.count += 1
 
@@ -57,18 +78,15 @@ class PayrollSystem:
     def search_employee_index(self, id: int):
         return next((i, x) for i, x in enumerate(self.employees) if x.id == id)
 
-    # TODO: Need to serialize it
     def del_employee(self, id: int):
         index, _ = self.search_employee_index(id)
         self.employees[index].delete(self.calendar)
         del self.employees[index]
 
-    # TODO: Need to serialize it
     def launch_timecard(self, id: int, hours: int):
         employee = self.search_employee(id)
         employee.add_hourwage(hours)
 
-    # TODO: Need to serialize it
     def launch_sell_result(self, id: int, price: int, date = current_date):
         if date == 'current':
             date = self.current_date
@@ -77,7 +95,6 @@ class PayrollSystem:
             raise Exception('Incorrect employee type')
         self.calendar[hash_date(date)]['update'].append((self.SELL_RESULT, employee.id, price))
 
-    # TODO: Need to serialize it
     # charge must be a whole value, not a percentage of wage
     def launch_service_charge(self, id: int, charge: int):
         employee = self.search_employee(id)
@@ -89,17 +106,14 @@ class PayrollSystem:
             if self.calendar[key] != {'schedule':[], 'update':[]}:
                 print(str(key) + ':', self.calendar[key])
 
-    # TODO: Need to serialize it
-    def change_employee_data(self, id: int, name: str = 0, address: str = 0, type: str = 0, payment_method: str = 0, syndicate: bool = 0, syndicate_id: int = 0, syndicate_charge: int = 0):
+    def change_employee_data(self, id: int, name: str = 0, address: str = 0, payment_method: str = 0, syndicate: bool = 0, syndicate_id: int = 0, syndicate_charge: int = 0):
         employee = self.search_employee(id)
         if name:
             employee.name = name
         if address:
             employee.address = address
-        if type:
-            employee.type = type
         if payment_method:
-            employee.payment_method = payment_method
+            employee.payment_method = employee_paymethod(payment_method)
         
         employee.syndicate = syndicate
 

@@ -1,10 +1,6 @@
 import datetime
 import calendar
 
-SALARIED_PAYMENT = 0
-HOURLY_PAYMENT = 1
-COMMISSIONED_PAYMENT = 2
-
 def hash_date(date: datetime.date):
     months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     days = 0
@@ -119,11 +115,15 @@ def schedule_paymethod(date: datetime.date, entry: str):
 
     return out_date
 
+def add_schedule_date(id: int, date: datetime.date, current_calendar):
+    current_calendar[hash_date(date)]['schedule'].append(id)
+
 class Employee:
     def __init__(self, name: str, address: str, id: int = 0):
         self.name = name
         self.address = address
 
+        self.payment_schedule = ''
         self.payment_method = ''
         self.type = ''
         self.syndicate = False
@@ -134,42 +134,42 @@ class Employee:
         self.owing_qnt = 0
 
     def __str__(self):
-        return f'{self.id}, {self.name}, {self.address}, {self.payment_method}, {self.type}'
+        return f'{self.id}, {self.name}, {self.address}, {self.payment_schedule}, {self.type} | syndicate: {self.syndicate}, {self.syndicate_id}, {self.syndicate_charge}'
 
     def owing(self, owing: int):
         self.owing_qnt += owing
 
     def generate_schedule_paymethod(self, date, c_calendar):
-        payment_date = schedule_paymethod(date, self.payment_method)
+        payment_date = schedule_paymethod(date, self.payment_schedule)
         add_schedule_date(self.id, payment_date, c_calendar)
 
         self.scheduled_date = payment_date
+
+        if self.syndicate:
+            self.owing(self.syndicate_charge)
     
     def delete(self, c_calendar):
         index = next(i for i, x in enumerate(c_calendar[hash_date(self.scheduled_date)]['schedule']) if x == self.id)
         del c_calendar[hash_date(self.scheduled_date)]['schedule'][index]
 
-    def print_generated_payment(self, value: int):
-        print(f'Generated payment of: {self.name} R$ {value}')
+    def print_generated_payment(self, value: int, date: datetime.date):
+        print(f'Generated payment of: {self.name} R$ {value}\n | Payment method: {self.payment_method}\n | Date: {date}')
 
     def generate_payment(self, current_date, current_calendar):
         raise NotImplementedError()
-
-def add_schedule_date(id: int, date: datetime.date, current_calendar):
-    current_calendar[hash_date(date)]['schedule'].append(id)
 
 class Salaried(Employee):
     def __init__(self, name, address, monthly_wage, id = 0):
         super().__init__(name, address, id)
 
         self.type = 'Salaried'
-        self.payment_method = 'monthly'
+        self.payment_schedule = 'monthly'
 
         self.monthly_wage = monthly_wage
 
     def generate_payment(self, current_date, current_calendar):
         value = self.monthly_wage - self.owing_qnt
-        super().print_generated_payment(value)
+        super().print_generated_payment(value, current_date)
 
         super().generate_schedule_paymethod(current_date, current_calendar)
 
@@ -178,7 +178,7 @@ class Commissioned(Employee):
         super().__init__(name, address, id)
 
         self.type = 'Commissioned'
-        self.payment_method = 'bi-weekly'
+        self.payment_schedule = 'bi-weekly'
 
         self.base_salary = 900
         self.added_price = 0
@@ -199,7 +199,7 @@ class Commissioned(Employee):
             self.last_date += datetime.timedelta(days=1)
         
         value = self.added_price + self.base_salary - self.owing_qnt
-        super().print_generated_payment(value)
+        super().print_generated_payment(value, current_date)
         self.added_price = 0
 
         super().generate_schedule_paymethod(current_date, current_calendar)
@@ -209,7 +209,7 @@ class Hourly(Employee):
         super().__init__(name, address, id)
 
         self.type = 'Hourly'
-        self.payment_method = 'weekly'
+        self.payment_schedule = 'weekly'
         self.hour_wage = hour_wage
         self.added_wage = 0
 
@@ -223,7 +223,7 @@ class Hourly(Employee):
 
     def generate_payment(self, current_date, current_calendar):
         value = self.added_wage - self.owing_qnt
-        super().print_generated_payment(value)
+        super().print_generated_payment(value, current_date)
 
         self.added_wage = 0
 
