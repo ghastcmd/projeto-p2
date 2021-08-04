@@ -98,7 +98,7 @@ class QueueSystem:
             self.LAUNCH_SELLING: PayrollSystem.launch_sell_result,
             self.LAUNCH_SERVICE_CHARGE: PayrollSystem.launch_service_charge,
             self.CHANGE_EMPLOYEE_DATA: PayrollSystem.change_employee_data,
-            self.CHANGE_EMPLOYEE_TYPE: self.change_employee_type,
+            self.CHANGE_EMPLOYEE_TYPE: PayrollSystem.change_employee_type,
             self.RUN_TODAY_PAYROLL: PayrollSystem.run_today_payroll,
             self.UPDATE_DAY: PayrollSystem.update_day,
         }
@@ -185,8 +185,9 @@ if __name__ == '__main__':
     # system.print_payroll()
     # system.print_payroll_calendar()
     system.print_payroll()
-    system.last_payroll().change_employee_type(3, 'commissioned')
-
+    # system.last_payroll().change_employee_type(3, 'commissioned')
+    system.change_employee_type(3, 'commissioned')
+    system.write()
     system.print_payroll()
     # system.last_payroll().employees[]
 
