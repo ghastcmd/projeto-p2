@@ -39,12 +39,47 @@ Todos os empregados, ao serem adicionados são atribuídos uma identificação, 
    2. O **id** é o id do empregado que se necessita alterar os dados
    3. O **dict** é o dicionário em python dos atributos que se necessita alterar os dados, os possíveis parâmetros são:
       * `name, address, payment_method, syndicate, syndicate_id, syndicate_charge`
+      * O **name** é para mudar o nome
+      * O **address** é para mudar o endereço
+      * O **payment_method** é para mudar o método de pagamento
+      * O **syndicate** é para mudar se pertence ao sindicato ou não
+      * O **syndicate_id** é para mudar a identificação sindical
+      * O **syndicate_charge** é para mudar a cobrança sindical 
 
 7. Para modificar o tipo de empregado, utiliza-se a chamada de função `change_employee_type`
    1. Colocam-se os parâmetros `id, type`
    2. O parâmetro **id** é o id do funcionário que se deseja mudar o tipo
    3. O parâmetro **type** é o tipo do empregado que se deseja modificar para, os tipos são: **Salaried**, **Commissioned**, **Hourly**
-   
+
+8. Para mudar o tipo da agenda de pagamento, é necessário chamar o método `change_payment_schedule`
+   1. Os atributos `id, new_schedule` são necessários
+   2. O atributo **id** é o id do pagamento que será modificado
+   3. O atributo **new_schedule** é a nova agenda de pagamento
+      1. As agendas de pagamentos podem ser mensais, como exemplo:
+         1. `mensal 1` - todo o primeiro dia do mês
+         2. `mensal 3` - todo o terceiro dia do mês
+         3. `mensal $` - todo o último dia do mês
+         4. Pode ser em inglês também, ex.: `monthly 1`
+      2. Ter pagamentos semanais, como exemplo:
+         1. `semanal 2 sexta` - toda sexta a cada duas semanas
+         2. `semanal 1 quarta` - toda quarta todas as semanas
+         3. Também poder se a agenda em inglês, ex.: `weekly 2 friday`
+
+9.  Para atualizar a numeração do dia, ir para o dia seguinte, utiliza-se a chamada de função `update_day`. Essa função é necessária para que os dias sigam no sistema.
+
+10. Para rodar a folha de pagamento para hoje é necessário realizar a chamada de função `run_today_payroll`, com ela se realizará o pagamento de todos os funcionários do dia.
+
+11. Sistema de undo/redo que poderá desfazer ou refazer alterações feitas no banco de dados
+    1. Com o método `undo`, desfaz a última alteração feita no sistema
+    2. Com o método `redo`, refaz a última alteração desfeita no sistema
+
+12. Existe o método `write`. O sistema que se pode utilizar é o `QueueSystem`, nele as ações realizadas por meios de funções são somente adicionadas a uma fila que será escrita no sistema, por meio da chamada de função `write`. Com a função write, cria-se um novo sistema de pagamento que irá sobrepor o antigo, e adicionará à lista de escrita.
+    1. Com isso, o que ocorre é que para escrever as mudanças no sistema, é necessário chamar a função write para que se possa alterar os atributos atuais.
+
+13. Existe a função `print` que imprime na tela as funções que estão na fila, a função `print_payroll` que imprime o último estado escrito no sistema de pagamento, e a função `print_payroll_calendar` que imprime o calendário do último estado escrito do sistema de pagamento.
+
+14. Existe ainda o método `search_by_name` que dispõe para o usuário o **id** do empregado através do **nome**. Ele procura somente no último estado escrito do sistema, portanto é necessário a chamad do método `write`, anteriormente.
+
 
 ## Sistema de folha de pagamento
 

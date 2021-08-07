@@ -133,7 +133,7 @@ class PayrollSystem:
     def change_employee_type(self, id, type):
         type_arr = ['salaried', 'commissioned', 'hourly']
 
-        assert type in type_arr
+        assert type.lower() in type_arr
 
         index, employee = self.search_employee_index(id)
         name = employee.name
@@ -142,11 +142,11 @@ class PayrollSystem:
         special, _, _ = get_schedule_params(employee.payment_schedule)
         employee.delete(self.calendar)
 
-        if type == 'salaried':
+        if type.lower() == 'salaried':
             self.employees[index] = Salaried(name, address, wage, id)
-        elif type == 'commissioned':
+        elif type.lower() == 'commissioned':
             self.employees[index] = Commissioned(name, address, wage, self.current_date, id)
-        elif type == 'hourly':
+        elif type.lower() == 'hourly':
             self.employees[index] = Hourly(name, address, wage, id)
         
         if not special:
