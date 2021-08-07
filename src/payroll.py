@@ -94,6 +94,7 @@ class PayrollSystem:
     # charge must be a whole value, not a percentage of wage
     def launch_service_charge(self, id: int, charge: int):
         employee = self.search_employee(id)
+        assert employee.syndicate == True
         employee.owing(charge)
 
     def print_calendar(self):
@@ -127,12 +128,6 @@ class PayrollSystem:
             return employee.hourly_wage * 28
 
     def change_employee_type(self, id, type):
-        type_dict = {
-            'salaried': 'Salaried',
-            'commissioned': 'Commissioned',
-            'hourly': 'Hourly',
-        }
-
         type_arr = ['salaried', 'commissioned', 'hourly']
 
         assert type in type_arr
@@ -152,3 +147,6 @@ class PayrollSystem:
         
         self.employees[index].generate_schedule_paymethod(self.current_date, self.calendar)
         self.employees[index].payment_method = employee_paymethod('deposit in bank account')
+
+    def cange_payment_schedule(self, id, new_schedule):
+        return

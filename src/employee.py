@@ -74,13 +74,11 @@ def get_day_of_week(date, quantity, weekday):
     
     return datetime.date(date.year, date.month, other_day)
 
-def schedule_paymethod(date: datetime.date, entry: str):
-    monthly = 0
-    weekly = 1
+def get_schedule_params(entry: str):
     func_dict = {
-        'monthly': monthly, 'weekly': weekly,
-        'mensalmente': monthly, 'semanalmente': weekly,
-        'mensal': monthly, 'semanal': weekly
+        'monthly': 'monthly', 'weekly': 'weekly',
+        'mensalmente': 'monthly', 'semanalmente': 'weekly',
+        'mensal': 'monthly', 'semanal': 'weekly'
     }
 
     weekday_dict = {
@@ -101,17 +99,27 @@ def schedule_paymethod(date: datetime.date, entry: str):
         entry = special_dict[entry]
         parsed_entry = entry.split(' ')
 
-    func_selection = func_dict[parsed_entry[0]]
+    type_of_schedule = func_dict[parsed_entry[0]]
 
     if parsed_entry[1] != '$':
         entry_first_arg = int(parsed_entry[1])
     else:
         entry_first_arg = -1
 
-    if func_selection == monthly:
-        out_date = get_day_of_month(date, entry_first_arg)
-    elif func_selection == weekly:
-        out_date = get_day_of_week(date, entry_first_arg, weekday_dict[parsed_entry[2]])
+    if type_of_schedule == 'monthly':
+        return type_of_schedule, [entry_first_arg]
+    elif type_of_schedule == 'weekly':
+        return type_of_schedule, (entry_first_arg, weekday_dict[parsed_entry[2]])
+
+def schedule_paymethod(date: datetime.date, entry: str):
+    func_selection, args = get_schedule_params(entry)
+
+    func_selection_dict = {
+        'monthly': get_day_of_month,
+        'weekly': get_day_of_week,
+    }
+
+    out_date = func_selection_dict[func_selection](date, *args)
 
     return out_date
 
