@@ -136,6 +136,7 @@ class PayrollSystem:
         name = employee.name
         address = employee.address
         wage = self.get_employee_wage(employee)
+        special, _, _ = get_schedule_params(employee.payment_schedule)
         employee.delete(self.calendar)
 
         if type == 'salaried':
@@ -145,8 +146,17 @@ class PayrollSystem:
         elif type == 'hourly':
             self.employees[index] = Hourly(name, address, wage, id)
         
+        if not special:
+            self.employees[index].payment_schedule = employee.payment_schedule
+        
+        self.employees[index].syndicate = employee.syndicate
+        self.employees[index].syndicate_charge = employee.syndicate_charge
+        self.employees[index].syndicate_id = employee.syndicate_id
         self.employees[index].generate_schedule_paymethod(self.current_date, self.calendar)
         self.employees[index].payment_method = employee_paymethod('deposit in bank account')
 
-    def cange_payment_schedule(self, id, new_schedule):
-        return
+    def change_payment_schedule(self, id, new_schedule):
+        get_schedule_params(new_schedule)
+
+        employee = self.search_employee(id)
+        employee.payment_schedule = new_schedule

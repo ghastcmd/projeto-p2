@@ -94,8 +94,10 @@ def get_schedule_params(entry: str):
         'semanalmente': 'weekly 1 friday', 'bi-semanalmente': 'weekly 2 friday'
     }
 
+    special = False
     parsed_entry = entry.split(' ')
     if len(parsed_entry) == 1:
+        special = True
         entry = special_dict[entry]
         parsed_entry = entry.split(' ')
 
@@ -107,12 +109,12 @@ def get_schedule_params(entry: str):
         entry_first_arg = -1
 
     if type_of_schedule == 'monthly':
-        return type_of_schedule, [entry_first_arg]
+        return special, type_of_schedule, [entry_first_arg]
     elif type_of_schedule == 'weekly':
-        return type_of_schedule, (entry_first_arg, weekday_dict[parsed_entry[2]])
+        return special, type_of_schedule, (entry_first_arg, weekday_dict[parsed_entry[2]])
 
 def schedule_paymethod(date: datetime.date, entry: str):
-    func_selection, args = get_schedule_params(entry)
+    _, func_selection, args = get_schedule_params(entry)
 
     func_selection_dict = {
         'monthly': get_day_of_month,

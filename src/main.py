@@ -12,6 +12,7 @@ class QueueSystem:
     RUN_TODAY_PAYROLL = 7
     PAYROLL_STATE = 8
     UPDATE_DAY = 9
+    CHANGE_PAYMENT_SCHEDULE = 10
 
     def __init__(self, payroll: PayrollSystem):
         self.state_save = [(self.PAYROLL_STATE, (payroll))]
@@ -63,6 +64,11 @@ class QueueSystem:
         self.current_index += 1
         self.state_save.append([self.UPDATE_DAY])
 
+    def change_payment_schedule(self, id, new_schedule):
+        self.overwrite_undo()
+        self.current_index += 1
+        self.state_save.append((self.CHANGE_PAYMENT_SCHEDULE, (id, new_schedule)))
+
     def print(self):
         print_dict = {
             self.ADD_EMPLOYEE: 'ADD_EMPLOYEE',
@@ -75,6 +81,7 @@ class QueueSystem:
             self.RUN_TODAY_PAYROLL: 'RUN_TODAY_PAYROLL',
             self.PAYROLL_STATE: 'PAYROLL_STATE',
             self.UPDATE_DAY: 'UPDATE_DAY',
+            self.CHANGE_PAYMENT_SCHEDULE: 'CHANGE_PAYMENT_SCHEDULE',
         }
 
         for x in self.state_save[:self.current_index]:
@@ -101,6 +108,7 @@ class QueueSystem:
             self.CHANGE_EMPLOYEE_TYPE: PayrollSystem.change_employee_type,
             self.RUN_TODAY_PAYROLL: PayrollSystem.run_today_payroll,
             self.UPDATE_DAY: PayrollSystem.update_day,
+            self.CHANGE_PAYMENT_SCHEDULE: PayrollSystem.change_payment_schedule,
         }
 
         index = self.states_index[-1]
@@ -186,8 +194,8 @@ if __name__ == '__main__':
     # system.print_payroll()
     # system.print_payroll_calendar()
     system.print_payroll()
-    # system.last_payroll().change_employee_type(3, 'commissioned')
     system.change_employee_type(3, 'commissioned')
+    system.change_payment_schedule(3, 'weekly 1 friday')
     system.write()
     system.print_payroll()
     # system.last_payroll().employees[]
