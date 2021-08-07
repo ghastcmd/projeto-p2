@@ -14,8 +14,12 @@ if __name__ == '__main__':
 
     system.update_day()
 
+    system.write()
+
+    simple_id = system.search_by_name('simple')
+
     system.launch_timecard(5, 8)
-    system.change_employee_data(1, {'syndicate': True, 'syndicate_charge': 100, 'syndicate_id': 2})
+    system.change_employee_data(simple_id, {'syndicate': True, 'syndicate_charge': 100, 'syndicate_id': 2})
     system.launch_service_charge(1, 100)
 
     system.launch_selling(4, 2000, 'current')

@@ -97,6 +97,9 @@ class QueueSystem:
     def print_payroll_calendar(self):
         self.last_payroll().print_calendar()
 
+    def search_by_name(self, name: str):
+        return self.last_payroll().search_get_id_by_name(name)
+    
     def write(self):
         self.overwrite_undo()
         function_dict = {
@@ -152,7 +155,7 @@ class QueueSystem:
 
         self.current_index += 1
 
-if __name__ == '__main__ 2':
+if __name__ == '__main__':
     payroll = PayrollSystem()
 
     payroll.add_employee('simple', 'via st. 11', 'salaried', 1230)

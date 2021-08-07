@@ -74,6 +74,9 @@ class PayrollSystem:
     def search_employee_index(self, id: int):
         return next((i, x) for i, x in enumerate(self.employees) if x.id == id)
 
+    def search_get_id_by_name(self, name: str):
+        return next(x.id for x in self.employees if x.name == name)
+
     def del_employee(self, id: int):
         index, _ = self.search_employee_index(id)
         self.employees[index].delete(self.calendar)
