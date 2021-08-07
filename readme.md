@@ -4,6 +4,48 @@ O objetivo do trabalho é seguir as especificações do arquivo [Folha_de_Pagame
 
 [Folha_de_Pagamento.pdf]: <./Folha_de_Pagamento.pdf>
 
+## Funções adicionadas ao sistema
+
+O sistema é inicializado utilizando o objeto `QueueSystem()` que é atribuído a uma variável, que no exemplo é chamada de `system`.
+
+1. Para poder adicionar um empregado, utiliza-se o método `add_employee`
+   1. Os atribuos `name, address, type e param` são necessários. 
+   2. O atributo **name** é o nome do empregado
+   3. O atributo **address** é o endereço do empregado
+   4. O atributo **param** é o parâmetro do tipo do empregado (ex. quando o empregado for *salaried*, **param** é o salário do empregado).
+
+Todos os empregados, ao serem adicionados são atribuídos uma identificação, um id. Cada empregado detém um id diferente dos que já existem no banco de dados dos empregados.
+
+2. Para remover um empregado utiliza-se o **id do mesmo** e a chamada do método `del_employee`, que automaticamente remove um empregado que possúi o dado id.
+
+3. Para lançar o cartão de ponto utiliza-se a chamada do método `launch_timecard`. 
+   1. Os atributos `id, hours` são necessãrios.
+   2. O **id** é o id do empregado que será adicionado o cartão de ponto 
+   3. E as **hours** são as horas que foram trabalhadas no dia.
+
+4. Para lançar um resultado de venda, utiliza-se o método `launch_selling`
+   1. No método, são necessárias os atributos `id, price, date`
+   2. O **id** é o id do empreagdo que se deseja lançar o resultado de venda
+   3. O **price** é o preço do produto que foi vendido
+   4. A **date** é a data à qual foi vendida o produto
+
+5. Para lançar uma taxa de serviço, utiliza-se o método `launch_service_charge`
+   1. São necessários os atributos `id, charge`
+   2. O **id** é o id do empregado
+   3. O atributo **charge** é a cobrança adicional que será realizada
+
+6. Para alterar os detalhes dos empregados, utiliza-se o método `change_employee_data`
+   1. Nele, é necessário adicionar os atributos `id, dict`
+   2. O **id** é o id do empregado que se necessita alterar os dados
+   3. O **dict** é o dicionário em python dos atributos que se necessita alterar os dados, os possíveis parâmetros são:
+      * `name, address, payment_method, syndicate, syndicate_id, syndicate_charge`
+
+7. Para modificar o tipo de empregado, utiliza-se a chamada de função `change_employee_type`
+   1. Colocam-se os parâmetros `id, type`
+   2. O parâmetro **id** é o id do funcionário que se deseja mudar o tipo
+   3. O parâmetro **type** é o tipo do empregado que se deseja modificar para, os tipos são: **Salaried**, **Commissioned**, **Hourly**
+   
+
 ## Sistema de folha de pagamento
 
 Consiste em gerenciar os dados dos empregados e os pagamentos à estes empregados, como cartões de ponto. Os empregados devem receber o salário no momento correto, ao modo que escolherem e obedecer várias taxas e impostos no salário.
@@ -49,38 +91,38 @@ Consiste em gerenciar os dados dos empregados e os pagamentos à estes empregado
    * Nome, Endereço, Tipo de empregado (hourly, salaried, commissioned), Atributos associados (salário por horário, salário mensal ou comissão)
    * Um número de empregado deve ser escolhido pelo sistema
 
-1. Remoção de um empregado
+2. Remoção de um empregado
    * Remover um empregado do sistema
 
-1. Lançar um cartão de ponto
+3. Lançar um cartão de ponto
    * Associará cartão de ponto ao empregado correto
 
-1. Lançar resultado de venda
+4. Lançar resultado de venda
    * Associará informação de venda ao funcionário correto
 
-1. Lançar taxa de serviço
+5. Lançar taxa de serviço
    * Anotará taxa de serviço e associará ao funcionário correto
 
-1. Alterar detalhes de um empregado
+6. Alterar detalhes de um empregado
    * Os seguinte atributos podem ser alterados
      * Nome, Endereço, Tipo, Método de pagamento, Se pertence ao sindicato ou não, indentificação no sindicato, taxa sindical
 
-2. Rodar folha de pagamento para hoje
+7. Rodar folha de pagamento para hoje
    * O sistema deve achar todos os empregados que devem ser pagos no dia
      * Deve calcular o valor do salário
      * Providenciar pagamento de acordo com método de pagamento escolhido pelo empregado
 
-3. Undo/Redo
+8. Undo/Redo
    * Qualquer funcionalidade feita entre as relações 1 - 7
      * Undo - Desfeitas
      * Redo - Refeita
 
-4. Agenda de pagamento
+9. Agenda de pagamento
    * Empregados podem selecionar a agenda de pagamento que desejarem
    * Por default as agendas "semanalmente", "mensalmente" e "bi-semanalmente" são usadas
    * Um empregados pode pedir para ser pago com qualquer uma dessas agendas
 
-5. Criação de novas agendas de pagamento
+10. Criação de novas agendas de pagamento
    * Criar uma agenda de pagamento para ser disponibilizada para os empregados
    * Uma agenda é especificada através de uma string
      * Exemplo de novas agendas de pagamento
