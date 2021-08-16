@@ -73,7 +73,7 @@ Todos os empregados, ao serem adicionados são atribuídos uma identificação, 
     1. Com o método `undo`, desfaz a última alteração feita no sistema
     2. Com o método `redo`, refaz a última alteração desfeita no sistema
 
-12. Existe a função `print` que imprime na tela as funções que estão na fila, a função `print_payroll` que imprime o último estado escrito no sistema de pagamento, e a função `print_payroll_calendar` que imprime o calendário do último estado escrito do sistema de pagamento.
+12. A função `print_payroll` que imprime o último estado no sistema de pagamento, e a função `print_payroll_calendar` que imprime o calendário do sistema de pagamento.
 
 13. Existe ainda o método `search_by_name` que dispõe para o usuário o **id** do empregado através do **nome**. Ele procura somente no último estado escrito do sistema.
 

@@ -63,10 +63,6 @@ class QueueSystem:
         payroll.change_payment_schedule(id, new_schedule)
         self.state_save.append(payroll)
 
-    def print(self):
-        for x in self.state_save[:self.current_index]:
-            print(x)
-
     def last_payroll(self):
         return self.state_save[self.current_index - 1]
 
