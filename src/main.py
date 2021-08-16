@@ -1,5 +1,7 @@
 from queue import QueueSystem
 
+# Link do github: https://github.com/ghastcmd/projeto-p2
+
 if __name__ == '__main__':
     system = QueueSystem()
 
@@ -13,8 +15,6 @@ if __name__ == '__main__':
     system.launch_timecard(5, 9)
 
     system.update_day()
-
-    system.write()
 
     simple_id = system.search_by_name('simple')
 
@@ -31,7 +31,6 @@ if __name__ == '__main__':
         system.run_today_payroll()
 
     # system.print()
-    system.write()
 
     system.add_employee('zinael', 'via str. 1', 'commissioned', 12)
     system.undo()
@@ -40,13 +39,11 @@ if __name__ == '__main__':
 
     system.change_employee_data(3, {'name': 'Ramon', 'syndicate': True, 'syndicate_charge': 100, 'syndicate_id': 1})
 
-    system.write()
     system.print()
 
     # system.print_payroll_calendar()
     system.print_payroll()
     system.change_employee_type(3, 'commissioned')
     system.change_payment_schedule(3, 'weekly 1 friday')
-    system.write()
     system.print_payroll()
     # system.last_payroll().employees[]
