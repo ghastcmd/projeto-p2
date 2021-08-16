@@ -39,9 +39,7 @@ if __name__ == '__main__':
 
     system.change_employee_data(3, {'name': 'Ramon', 'syndicate': True, 'syndicate_charge': 100, 'syndicate_id': 1})
 
-    system.print()
-
-    # system.print_payroll_calendar()
+    system.print_payroll_calendar()
     system.print_payroll()
     system.change_employee_type(3, 'commissioned')
     system.change_payment_schedule(3, 'weekly 1 friday')
