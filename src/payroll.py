@@ -106,7 +106,7 @@ class PayrollSystem:
             if self.calendar[key] != {'schedule':[], 'update':[]}:
                 print(str(key) + ':', self.calendar[key])
 
-    def change_employee_data(self, id: int, name: str = 0, address: str = 0, payment_method: str = 0, syndicate: bool = 0, syndicate_id: int = 0, syndicate_charge: int = 0):
+    def change_employee_data(self, id: int, name: str = 0, address: str = 0, payment_method: str = 0, syndicate: int = -1, syndicate_id: int = 0, syndicate_charge: int = 0):
         employee = self.search_employee(id)
         if name:
             employee.name = name
@@ -115,12 +115,13 @@ class PayrollSystem:
         if payment_method:
             employee.payment_method = employee_paymethod(payment_method)
         
-        employee.syndicate = syndicate
+        if syndicate != -1:
+            employee.syndicate = bool(syndicate)
 
         if syndicate_id:
-            employee.syndicate_id = syndicate_id
+            employee.syndicate_id = int(syndicate_id)
         if syndicate_charge:
-            employee.syndicate_charge = syndicate_charge
+            employee.syndicate_charge = int(syndicate_charge)
     
     def get_employee_wage(self, employee: Employee):
         if employee.type.lower() == 'salaried':
