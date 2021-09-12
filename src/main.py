@@ -35,9 +35,6 @@ def list_commands():
     print('Mudar a agenda de pagamento do empreagdo:')
     print('  change payment schedule <id do empregado> <nova agenda>\n')
 
-    print('Atualizar o dia do sistema:')
-    print('  update day\n')
-
     print('Rodar as folhas de pagamento para hoje:')
     print('  run payroll\n')
 
@@ -98,8 +95,6 @@ if __name__ == '__main__':
             system.add_employee(uin[1], new_str, type, int(uin[-1]))
         elif uinl == 2 and uin[0] == 'del':
             system.del_employee(int(uin[1]))
-        elif uinl == 2 and unify_string(0, 2, uin) == 'update day':
-            system.update_day()
         elif uinl == 2 and unify_string(0, 2, uin) == 'run payroll':
             system.run_today_payroll()
         elif uinl == 4 and unify_string(0, 2, uin) == 'launch timecard':
@@ -131,7 +126,7 @@ if __name__ == '__main__':
     system.del_employee(2)
     system.launch_timecard(5, 9)
 
-    system.update_day()
+    system.run_today_payroll()
 
     simple_id = system.search_by_name('simple')
 
@@ -144,7 +139,6 @@ if __name__ == '__main__':
     system.launch_selling(4, 1200, 'current')
 
     for _ in range(2):
-        system.update_day()
         system.run_today_payroll()
 
     # system.print()
